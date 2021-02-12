@@ -18,27 +18,12 @@ python:
 - '3.8'
 install:
   - pip install -r requirements.txt
-  - pip install codacy-coverage
-  - pip install selenium
 jobs:
   include:
     - script:
       - cd decide
-      - coverage run --branch --source=. ./manage.py test authentication/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
+      - run --branch --source=. ./manage.py test authentication/ --keepdb --with-xunit
+
     - script:
       - cd decide
-      - coverage run --branch --source=. ./manage.py test census/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-notifications:
-  email:
-    recipients:
-      - carsantir@alum.us.es
-      - marmarser5@alum.us.es
-      - marmolpen3@alum.us.es
-      - josvilgar1@alum.us.es
-      - ramonfernandez1999@gmail.com
-    on_success: never
-    on_failure: always
+      - run --branch --source=. ./manage.py test census/ --keepdb --with-xunit
