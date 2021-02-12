@@ -1,0 +1,44 @@
+
+dist: xenial
+services:
+  - postgresql
+addons:
+  postgresql: "9.4" "9.6"
+env:
+  -DB=postgres
+
+before_script:
+  - psql -U postgres -c "create user decide password 'decide'"
+  - psql -U postgres -c "create database test_decide owner decide"
+  - psql -U postgres -c "ALTER USER decide CREATEDB"
+  - cp decide/local_settings.travis.py decide/local_settings.py
+language: python
+python:
+- '3.6'
+- '3.8'
+install:
+  - pip install -r requirements.txt
+  - pip install codacy-coverage
+  - pip install selenium
+jobs:
+  include:
+    - script:
+      - cd decide
+      - coverage run --branch --source=. ./manage.py test authentication/ --keepdb --with-xunit
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
+    - script:
+      - cd decide
+      - coverage run --branch --source=. ./manage.py test census/ --keepdb --with-xunit
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
+notifications:
+  email:
+    recipients:
+      - carsantir@alum.us.es
+      - marmarser5@alum.us.es
+      - marmolpen3@alum.us.es
+      - josvilgar1@alum.us.es
+      - ramonfernandez1999@gmail.com
+    on_success: never
+    on_failure: always
